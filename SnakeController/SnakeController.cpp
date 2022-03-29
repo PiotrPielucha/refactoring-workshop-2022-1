@@ -94,15 +94,18 @@ void Controller::receive(std::unique_ptr<Event> e)
             }
         }
 
+        if (newHead.x < 0 or newHead.y < 0 or
+            newHead.x >= m_mapDimension.first or
+            newHead.y >= m_mapDimension.second) {
+                m_scorePort.send(std::make_unique<EventT<LooseInd>>());
+                lost = true;
+            }
+
         if (not lost) {
+            
             if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
                 m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
                 m_foodPort.send(std::make_unique<EventT<FoodReq>>());
-            } else if (newHead.x < 0 or newHead.y < 0 or
-                       newHead.x >= m_mapDimension.first or
-                       newHead.y >= m_mapDimension.second) {
-                m_scorePort.send(std::make_unique<EventT<LooseInd>>());
-                lost = true;
             } else {
                 for (auto &segment : m_segments) {
                     if (not --segment.ttl) {
@@ -112,9 +115,7 @@ void Controller::receive(std::unique_ptr<Event> e)
                     }
                 }
             }
-        }
-        
-        if (not lost) {
+
             m_segments.push_front(newHead);
             DisplayInd placeNewHead = placeNewSegment(newHead, Cell_SNAKE);
 
