@@ -22,6 +22,13 @@ struct UnexpectedEventException : std::runtime_error
     UnexpectedEventException();
 };
 
+struct Segment
+{
+    int x;
+    int y;
+    int ttl;
+};
+
 class Controller : public IEventHandler
 {
 public:
@@ -30,15 +37,11 @@ public:
     Controller(Controller const& p_rhs) = delete;
     Controller& operator=(Controller const& p_rhs) = delete;
 
+    DisplayInd placeNewSegment(Segment segment, Cell newCell);
+
     void receive(std::unique_ptr<Event> e) override;
 
 private:
-    struct Segment
-    {
-        int x;
-        int y;
-        int ttl;
-    };
 
     IPort& m_displayPort;
     IPort& m_foodPort;

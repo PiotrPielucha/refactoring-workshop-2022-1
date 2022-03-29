@@ -63,6 +63,15 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
     }
 }
 
+DisplayInd Controller::placeNewSegment(Segment segment, Cell newCell)
+{
+    DisplayInd newPlaced;
+    newPlaced.x = segment.x;
+    newPlaced.y = segment.y;
+    newPlaced.value = newCell;
+    return newPlaced;
+}
+
 void Controller::receive(std::unique_ptr<Event> e)
 {
     try {
@@ -97,23 +106,23 @@ void Controller::receive(std::unique_ptr<Event> e)
             } else {
                 for (auto &segment : m_segments) {
                     if (not --segment.ttl) {
-                        DisplayInd l_evt;
-                        l_evt.x = segment.x;
-                        l_evt.y = segment.y;
-                        l_evt.value = Cell_FREE;
+                        DisplayInd l_evt = placeNewSegment(segment, Cell_FREE);
+                        // l_evt.x = segment.x;
+                        // l_evt.y = segment.y;
+                        // l_evt.value = Cell_FREE;
 
                         m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
                     }
                 }
             }
         }
-
+        
         if (not lost) {
             m_segments.push_front(newHead);
-            DisplayInd placeNewHead;
-            placeNewHead.x = newHead.x;
-            placeNewHead.y = newHead.y;
-            placeNewHead.value = Cell_SNAKE;
+            DisplayInd placeNewHead = placeNewSegment(newHead, Cell_SNAKE);
+            // placeNewHead.x = newHead.x;
+            // placeNewHead.y = newHead.y;
+            // placeNewHead.value = Cell_SNAKE;
 
             m_displayPort.send(std::make_unique<EventT<DisplayInd>>(placeNewHead));
 
