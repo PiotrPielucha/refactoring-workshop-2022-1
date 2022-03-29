@@ -148,8 +148,6 @@ void Controller::receive(std::unique_ptr<Event> e)
                 }
 
                 if (!requestedFoodCollidedWithSnake) {
-                //     m_foodPort.send(std::make_unique<EventT<FoodReq>>());
-                // } else {
                     DisplayInd clearOldFood;
                     clearOldFood.x = m_foodPosition.first;
                     clearOldFood.y = m_foodPosition.second;
@@ -173,13 +171,12 @@ void Controller::receive(std::unique_ptr<Event> e)
                     for (auto const& segment : m_segments) {
                         if (segment.x == requestedFood.x and segment.y == requestedFood.y) {
                             requestedFoodCollidedWithSnake = true;
+                            m_foodPort.send(std::make_unique<EventT<FoodReq>>());
                             break;
                         }
                     }
 
-                    if (requestedFoodCollidedWithSnake) {
-                        m_foodPort.send(std::make_unique<EventT<FoodReq>>());
-                    } else {
+                    if (!requestedFoodCollidedWithSnake) {
                         DisplayInd placeNewFood;
                         placeNewFood.x = requestedFood.x;
                         placeNewFood.y = requestedFood.y;
