@@ -102,7 +102,6 @@ void Controller::receive(std::unique_ptr<Event> e)
             }
 
         if (not lost) {
-            
             if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
                 m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
                 m_foodPort.send(std::make_unique<EventT<FoodReq>>());
